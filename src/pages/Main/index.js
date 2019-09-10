@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
-import { Container, Form, SubmitButton } from './styles';
+import { stringify } from 'querystring';
+import { Container, Form, SubmitButton, List } from './styles';
 
 import api from '../../services/api';
 
@@ -12,6 +13,24 @@ export default class Main extends Component {
     loading: false,
   };
 
+  // Inicialização do componente, busca as informções da sessionStorage
+  componentDidMount() {
+    const repositories = localStorage.getItem('repositories');
+    // console.log(repositories);
+    if (repositories) {
+      this.setState({ repositories: JSON.parse(repositories) });
+    }
+  }
+
+  // Se algum repositorio for adicionado, salva no sessionStorage
+  componentDidUpdate(_, prevState) {
+    const { repositories } = this.state;
+
+    if (prevState.repositories !== repositories) {
+      localStorage.setItem('repositories', JSON.stringify(repositories));
+    }
+  }
+
   handleInputChange = e => {
     this.setState({ newRepo: e.target.value });
   };
@@ -21,7 +40,7 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const { newRepo, repositories, loading } = this.state;
+    const { newRepo, repositories } = this.state;
 
     const response = await api.get(`/repos/${newRepo}`);
 
@@ -37,7 +56,7 @@ export default class Main extends Component {
   };
 
   render() {
-    const { newRepo, loading } = this.state;
+    const { newRepo, loading, repositories } = this.state;
     return (
       <Container>
         <h1>
@@ -60,6 +79,15 @@ export default class Main extends Component {
             )}
           </SubmitButton>
         </Form>
+
+        <List>
+          {repositories.map(repository => (
+            <li key={repository.name}>
+              <span>{repository.name}</span>
+              <a href="#">Detalhes</a>
+            </li>
+          ))}
+        </List>
       </Container>
     );
   }
