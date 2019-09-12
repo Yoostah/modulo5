@@ -80,14 +80,41 @@ export const IssueList = styled.ul`
         }
 
         span {
-          background: #eee;
-          color: #333;
+          transition: all 0.2s ease-in-out;
+          white-space: nowrap;
+          background: #7159c1;
+          color: #fff;
           border-radius: 2px;
           font-size: 12px;
           font-weight: 600;
           height: 20px;
           padding: 3px 4px;
           margin-left: 10px;
+          &:hover {
+            padding: 5px 6px;
+          }
+        }
+      }
+
+      span {
+        transition: all 0.2s ease-in-out;
+        white-space: nowrap;
+        border-radius: 2px;
+        font-size: 12px;
+        font-weight: 600;
+        height: 20px;
+        padding: 3px 4px;
+        margin-left: 10px;
+        &:hover {
+          padding: 5px 6px;
+        }
+        &.open {
+          background: #0000ff;
+          color: #fff;
+        }
+        &.closed {
+          background: #ff0000;
+          color: #fff;
         }
       }
 
@@ -96,6 +123,63 @@ export const IssueList = styled.ul`
         font-size: 12px;
         color: #999;
       }
+    }
+  }
+`;
+
+export const StateStatus = styled.div`
+  margin: 10px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  border: 1px solid #eee;
+
+  h1 {
+    flex: 1;
+    font-weight: normal;
+    margin: 10px auto;
+  }
+  div {
+    margin-bottom: 10px;
+
+    label {
+      margin-left: 10px;
+      strong {
+        margin-left: 5px;
+      }
+    }
+  }
+`;
+
+export const Pagination = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+
+  p {
+    text-align: center;
+  }
+
+  button {
+    transition: all 0.2s ease-in-out;
+    background: #7159c1;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid black;
+    padding: 5px 10px;
+    border-radius: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      opacity: 0.6;
     }
   }
 `;

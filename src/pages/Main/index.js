@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import { FaGithubAlt, FaPlus, FaSpinner } from 'react-icons/fa';
+import { FaGithubAlt, FaPlus, FaSpinner, FaTrash } from 'react-icons/fa';
 import Container from '../../components/Container';
-import { Form, SubmitButton, List } from './styles';
+import { Form, SubmitButton, List, ErrorMsg } from './styles';
 
 import api from '../../services/api';
 
@@ -12,6 +12,8 @@ export default class Main extends Component {
     newRepo: '',
     repositories: [],
     loading: false,
+    error: false,
+    errorMsg: '',
   };
 
   // Inicialização do componente, busca as informções da sessionStorage
@@ -43,28 +45,51 @@ export default class Main extends Component {
 
     const { newRepo, repositories } = this.state;
 
-    const response = await api.get(`/repos/${newRepo}`);
+    try {
+      const response = await api.get(`/repos/${newRepo}`);
 
-    const data = {
-      name: response.data.full_name,
-    };
+      const data = {
+        name: response.data.full_name,
+      };
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      const checkRepoExists = repositories.find(repo => {
+        return repo.name.indexOf(newRepo) !== -1;
+      });
+
+      if (checkRepoExists) {
+        throw new Error('This repository is already added');
+      } else {
+        this.setState(prevState => ({
+          repositories: [...repositories, data],
+          newRepo: '',
+          loading: false,
+          error: !prevState,
+        }));
+      }
+    } catch (error) {
+      this.setState({ loading: false, error: true, errorMsg: error.message });
+    }
   };
 
+  handleDelete(repoName) {
+    const { repositories } = this.state.repositories;
+    this.setState(prevState => ({
+      repositories: [
+        ...repositories,
+        repositories.filter(repo => repo.name !== repoName),
+      ],
+    }));
+  }
+
   render() {
-    const { newRepo, loading, repositories } = this.state;
+    const { newRepo, loading, repositories, error, errorMsg } = this.state;
     return (
       <Container>
         <h1>
           <FaGithubAlt />
           Repositórios
         </h1>
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} error={error}>
           <input
             type="text"
             placeholder="Adicionar Repositório"
@@ -80,14 +105,17 @@ export default class Main extends Component {
             )}
           </SubmitButton>
         </Form>
-
+        {error && <ErrorMsg>{errorMsg}</ErrorMsg>}
         <List>
           {repositories.map(repository => (
             <li key={repository.name}>
               <span>{repository.name}</span>
-              <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
-                Detalhes
-              </Link>
+              <div>
+                <Link to={`/repository/${encodeURIComponent(repository.name)}`}>
+                  Detalhes
+                </Link>
+                <FaTrash onClick={() => this.handleDelete(repository.name)} />
+              </div>
             </li>
           ))}
         </List>

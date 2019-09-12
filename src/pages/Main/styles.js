@@ -1,6 +1,8 @@
 import styled, { keyframes, css } from 'styled-components';
 
-export const Form = styled.form`
+export const Form = styled.form.attrs(props => ({
+  disabled: props.error,
+}))`
   margin-top: 30px;
   display: flex;
   flex-direction: row;
@@ -12,6 +14,14 @@ export const Form = styled.form`
     border-radius: 4px;
     font-size: 16px;
   }
+
+  ${props =>
+    props.error &&
+    css`
+      input {
+        border: 1px solid #ff0000;
+      }
+    `}
 `;
 
 const rotate = keyframes`
@@ -24,6 +34,13 @@ const rotate = keyframes`
   }
 `;
 
+export const ErrorMsg = styled.p`
+  font-size: 12px;
+  font-weight: 600;
+  color: red;
+  margin-left: 3px;
+  margin-top: 3px;
+`;
 export const SubmitButton = styled.button.attrs(props => ({
   type: 'submit',
   disabled: props.loading,
@@ -70,6 +87,11 @@ export const List = styled.ul`
     a {
       color: #7159c1;
       text-decoration: none;
+    }
+
+    svg {
+      color: #7159c1;
+      margin-left: 10px;
     }
   }
 `;
